@@ -747,6 +747,7 @@ function focusOnAction(action, object) {
 function markDiscovered(action) {
   if (!discoveryKeys.includes(action)) return;
   discoveries.add(action);
+  document.querySelector(`.object-dock [data-action="${action}"]`)?.classList.add("is-found");
   const count = discoveries.size;
   discoveryHearts.textContent = discoveryKeys.map((_, index) => index < count ? "♥" : "♡").join(" ");
   discoveryCount.textContent = `${count} of 6 found`;

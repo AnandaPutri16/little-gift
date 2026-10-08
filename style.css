@@ -64,6 +64,8 @@ button:focus-visible, a:focus-visible { outline: 3px solid #9c6970; outline-offs
 .object-dock { position: absolute; z-index: 3; left: 50%; bottom: max(25px, env(safe-area-inset-bottom)); display: flex; gap: 8px; padding: 8px; border: 1px solid rgba(255, 255, 255, .68); border-radius: 32px; background: rgba(255, 250, 245, .73); box-shadow: 0 12px 40px rgba(77, 54, 53, .13); opacity: 0; transform: translate(-50%, 12px); transition: opacity .8s ease .7s, transform .8s ease .7s; backdrop-filter: blur(16px); }
 .entered .object-dock { opacity: 1; transform: translate(-50%, 0); }
 .object-dock button { width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #8e666b; cursor: pointer; font-size: 23px; transition: background .2s ease, color .2s ease, transform .2s ease; }
+.object-dock button > span { filter: grayscale(1); opacity: .48; transition: filter .45s ease, opacity .45s ease; }
+.object-dock button.is-found > span { filter: grayscale(0); opacity: 1; }
 .object-dock button:hover { background: #f2e1df; color: #9b5e66; transform: translateY(-3px); }
 
 .scene-hint { position: absolute; z-index: 4; display: none; padding: 7px 11px; border: 1px solid rgba(255,255,255,.75); border-radius: 20px; background: rgba(255, 250, 245, .88); box-shadow: 0 5px 22px rgba(70, 49, 47, .12); color: #8e6268; font: 500 16px "Caveat", cursive; pointer-events: none; white-space: nowrap; backdrop-filter: blur(8px); }
