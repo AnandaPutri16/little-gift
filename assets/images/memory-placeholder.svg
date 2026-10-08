@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="title description">
+  <title id="title">A little memory placeholder</title>
+  <desc id="description">A dreamy scrapbook scene with a tiny house beneath a rose-colored evening sky.</desc>
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1">
+      <stop stop-color="#a9a9bd"/>
+      <stop offset=".56" stop-color="#e6b9b1"/>
+      <stop offset="1" stop-color="#f0d7bd"/>
+    </linearGradient>
+    <linearGradient id="hill" x2="0" y2="1">
+      <stop stop-color="#b69caa"/>
+      <stop offset="1" stop-color="#8f8296"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#sky)"/>
+  <circle cx="610" cy="148" r="58" fill="#fff0cf" opacity=".88"/>
+  <g fill="#fff4df" opacity=".86">
+    <circle cx="146" cy="119" r="4"/><circle cx="302" cy="83" r="3"/><circle cx="459" cy="165" r="4"/>
+    <circle cx="701" cy="250" r="3"/><circle cx="218" cy="222" r="3"/>
+  </g>
+  <path d="M0 414c106-82 193-66 284-18 88-96 177-92 270-17 94-66 163-67 246-27v248H0z" fill="url(#hill)"/>
+  <path d="M0 482c153-64 265-47 387 1 129-79 260-72 413-11v128H0z" fill="#776e84" opacity=".72"/>
+  <g transform="translate(324 295)">
+    <path d="M-79 67 0 6l79 61v122h-158z" fill="#f8e6d7"/>
+    <path d="M-96 70 0-7 97 70 82 88 0 23-82 88z" fill="#9c727a"/>
+    <rect x="-21" y="113" width="42" height="76" rx="19" fill="#b57d7b"/>
+    <rect x="-62" y="86" width="30" height="33" rx="12" fill="#d6a9a2"/>
+    <rect x="32" y="86" width="30" height="33" rx="12" fill="#d6a9a2"/>
+    <path d="M-6 30c15-19 42-3 31 14L0 68-24 44c-11-17 16-33 30-14" fill="#c77f88"/>
+  </g>
+  <g fill="#fbf1e8" opacity=".87" font-family="Georgia,serif" text-anchor="middle">
+    <text x="400" y="526" font-size="27">a moment to keep</text>
+    <text x="400" y="558" font-size="18">♡</text>
+  </g>
+</svg>

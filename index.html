@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6eee8">
+  <meta name="description" content="A tiny little world, made just for you.">
+  <title>A Little World for You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js"
+      }
+    }
+  </script>
+  <script type="module" src="script.js"></script>
+</head>
+<body>
+  <main class="experience" id="experience">
+    <div class="room-wash" aria-hidden="true"></div>
+    <canvas id="world" aria-label="An interactive miniature bedroom. Choose an object below to explore."></canvas>
+
+    <div class="fallback-room" id="fallbackRoom" aria-hidden="true">
+      <div class="fallback-window"><span></span><i></i><b></b></div>
+      <div class="fallback-shelf"></div>
+      <div class="fallback-bed"><i></i><b></b><span></span></div>
+      <div class="fallback-teddy">♡</div>
+      <div class="fallback-lamp"><i></i><b></b></div>
+      <div class="fallback-plant">✿</div>
+      <div class="fallback-rug"></div>
+    </div>
+
+    <div class="intro" id="intro">
+      <div class="intro-glow" aria-hidden="true"></div>
+      <div class="intro-specks" id="introSpecks" aria-hidden="true"></div>
+      <div class="intro-content">
+        <span class="intro-kicker">a small thing, made with love</span>
+        <h1><span aria-hidden="true">♡</span> <span id="introTitle">A Little World For You</span> <span aria-hidden="true">♡</span></h1>
+        <p id="introSubtitle">I made something small...<br>just for you.</p>
+        <p class="intro-music-hint" id="musicPrompt" aria-live="polite">our song is ready when you are ♡</p>
+        <button class="enter-button" id="enterButton" type="button">enter my little world ♡</button>
+        <span class="intro-footnote">best explored slowly</span>
+      </div>
+    </div>
+
+    <header class="hud" aria-label="World details">
+      <a class="world-mark" href="#experience" aria-label="Our little world home"><span>♡</span> OUR LITTLE WORLD</a>
+      <div class="discovery" aria-live="polite" aria-label="Little discoveries: none found">
+        <span class="discovery-label">little discoveries</span>
+        <span class="discovery-hearts" id="discoveryHearts" aria-hidden="true">♡ ♡ ♡ ♡ ♡ ♡</span>
+        <span class="sr-only" id="discoveryCount">0 of 6 found</span>
+      </div>
+      <button class="sound-button" id="soundButton" type="button" aria-label="Play our song" title="Our song">
+        <span class="music-glyph" aria-hidden="true">♫</span><span id="musicStatus">play our song</span>
+      </button>
+    </header>
+
+    <aside class="spotify-player" id="spotifyPlayer" aria-label="Spotify song player" aria-hidden="true">
+      <div id="spotifyEmbed"></div>
+    </aside>
+
+    <div class="scene-hint" id="sceneHint" aria-hidden="true">♡ click me</div>
+    <div class="final-nudge" id="finalNudge" hidden>
+      <span>you found every little thing ♡</span>
+      <button type="button" id="finalNudgeButton">one last surprise <span aria-hidden="true">→</span></button>
+    </div>
+
+    <nav class="object-dock" aria-label="Explore the room">
+      <button type="button" data-action="teddy" title="Teddy bear" aria-label="Teddy bear: a little hug"><span aria-hidden="true">🧸</span></button>
+      <button type="button" data-action="letter" title="Love letter" aria-label="Open the love letter"><span aria-hidden="true">💌</span></button>
+      <button type="button" data-action="photos" title="Our memories" aria-label="Open our photo memories"><span aria-hidden="true">📷</span></button>
+      <button type="button" data-action="gift" title="Little gift" aria-label="Open the little gift"><span aria-hidden="true">🎁</span></button>
+      <button type="button" data-action="music" title="Our song" aria-label="Open the Spotify music player"><span aria-hidden="true">♫</span></button>
+      <button type="button" data-action="stars" title="A little reminder" aria-label="Find a little reminder in the stars"><span aria-hidden="true">✧</span></button>
+    </nav>
+
+    <div class="modal-layer" id="modalLayer" hidden>
+      <section class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+        <button class="modal-close" type="button" data-close aria-label="Close">×</button>
+        <span class="modal-ornament" aria-hidden="true">✳</span>
+        <p class="modal-eyebrow" id="modalEyebrow">a little note</p>
+        <h2 id="modalTitle"></h2>
+        <div class="modal-content" id="modalContent"></div>
+        <div class="modal-actions" id="modalActions"></div>
+      </section>
+    </div>
+
+    <div class="custom-cursor" id="customCursor" aria-hidden="true">♡</div>
+    <div class="cinema-glow" aria-hidden="true"></div>
+  </main>
+</body>
+</html>
