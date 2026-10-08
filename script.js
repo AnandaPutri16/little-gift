@@ -7,14 +7,13 @@ const loveData = {
   introSubtitle: "I made something small...\njust for you.",
   letter: `Hey you...\n\nI don't always know how to say\neverything I feel,\n\nso I made this little world\nto say some of it for me.\n\nThank you for being here.\nThank you for being you. ♡`,
   spotify: {
-    url: "https://open.spotify.com/track/6dBUzqjtbnIa1TwYbyw5CM?si=3afa7d171089449b"
+    url: "https://open.spotify.com/track/2v0vKdardqBzAPhObJyAvd?si=c9703aaee0564060"
   },
   photos: [
-    { image: "assets/images/memory-placeholder.svg", caption: "our little moments ♡" },
-    { image: "assets/images/memory-placeholder.svg", caption: "one of my favorite memories" },
-    { image: "assets/images/memory-placeholder.svg", caption: "you + me" },
-    { image: "assets/images/memory-placeholder.svg", caption: "a day I want to keep" },
-    { image: "assets/images/memory-placeholder.svg", caption: "my favorite kind of ordinary" }
+    { image: "assets/images/foto1.jpeg", caption: "another concert, another memory with you ♡" },
+    { image: "assets/images/foto2.jpeg", caption: "the day you became my favorite person ♡" },
+    { image: "assets/images/foto3.jpeg", caption: "one of the places that feels like us" },
+    { image: "assets/images/foto4.jpeg", caption: "the safest place is right here, with you ♡" }
   ],
   finalMessage: `Thank you for being my favorite person.\n\nI don't need a perfect story.\nI just want more little moments with you.\n\nI love you. ♡`,
   starMessages: [
@@ -62,6 +61,9 @@ let finalSequence = false;
 const roomCamera = { x: 0, y: 4.8, z: 12.5, lookX: 0, lookY: 1.45, lookZ: 0 };
 let cameraTarget = { ...roomCamera };
 let pointerNdc = { x: 0, y: 0 };
+let activeDrag = null;
+let suppressSceneClick = false;
+let roomPan = { x: 0, y: 0 };
 let clock;
 const animated = [];
 const hotspots = [];
@@ -280,14 +282,32 @@ function buildPhotoFrame() {
   const frame = new THREE.Group();
   frame.position.set(1.25, 2.8, -3.69);
   scene.add(frame);
-  box(frame, [1.56, 1.3, .13], "#a7776d", [0, 0, 0]);
-  box(frame, [1.34, 1.08, .04], "#fcf2df", [0, 0, .09]);
-  box(frame, [1.13, .87, .035], "#d6c3ca", [0, .03, .12]);
-  const photo = new THREE.Mesh(new THREE.PlaneGeometry(.96, .7), new THREE.MeshBasicMaterial({ map: makeMemoryTexture(), side: THREE.DoubleSide }));
+  box(frame, [1.16, 1.62, .13], "#a7776d", [0, 0, 0]);
+  box(frame, [.94, 1.4, .04], "#fcf2df", [0, 0, .09]);
+  box(frame, [.77, 1.2, .035], "#d6c3ca", [0, .03, .12]);
+  const fallbackTexture = makeMemoryTexture();
+  const photo = new THREE.Mesh(new THREE.PlaneGeometry(.68, 1.08), new THREE.MeshBasicMaterial({ map: fallbackTexture, side: THREE.DoubleSide }));
   photo.position.set(0, .03, .145);
   frame.add(photo);
-  sphere(frame, .08, "#ca9d89", [0, -.53, .12]);
+  new THREE.TextureLoader().load(loveData.photos[0].image, (texture) => {
+    const imageAspect = texture.image.width / texture.image.height;
+    const frameAspect = .68 / 1.08;
+    texture.colorSpace = THREE.SRGBColorSpace;
+    if (imageAspect > frameAspect) {
+      texture.repeat.x = frameAspect / imageAspect;
+      texture.offset.x = (1 - texture.repeat.x) / 2;
+    } else {
+      texture.repeat.y = imageAspect / frameAspect;
+      texture.offset.y = (1 - texture.repeat.y) / 2;
+    }
+    texture.needsUpdate = true;
+    photo.material.map = texture;
+    photo.material.needsUpdate = true;
+    fallbackTexture.dispose();
+  });
+  sphere(frame, .08, "#ca9d89", [0, -.67, .12]);
   addHotspot(frame, "photos", "♡ open our memories");
+  frame.userData.fixedInRoom = true;
 }
 
 function makeMemoryTexture() {
@@ -528,18 +548,18 @@ function renderWorld() {
   });
   if (lampLight) lampLight.intensity = 32 + (isPlayingVisual ? 8 : 0) + Math.sin(elapsed * .8) * .6;
   if (recordDisc && isPlayingVisual && !reducedMotion) recordDisc.rotation.y += .024;
-  if (hoveredObject && hoveredObject.userData.action) {
+  if (hoveredObject && hoveredObject.userData.action && !hoveredObject.userData.fixedInRoom) {
     const home = hoveredObject.userData.homeScale;
     const factor = 1.06;
     hoveredObject.scale.lerp(home.clone().multiplyScalar(factor), .14);
     if (!reducedMotion) hoveredObject.rotation.y += .0025;
   }
-  const targetX = cameraTarget.x + (isEntered && !reducedMotion ? Math.sin(elapsed * .18) * .04 + pointerNdc.x * .25 : 0);
-  const targetY = cameraTarget.y + (isEntered && !reducedMotion ? Math.sin(elapsed * .22) * .025 - pointerNdc.y * .12 : 0);
+  const targetX = cameraTarget.x + roomPan.x + (isEntered && !reducedMotion ? Math.sin(elapsed * .18) * .04 + pointerNdc.x * .25 : 0);
+  const targetY = cameraTarget.y + roomPan.y + (isEntered && !reducedMotion ? Math.sin(elapsed * .22) * .025 - pointerNdc.y * .12 : 0);
   camera.position.x += (targetX - camera.position.x) * .018;
   camera.position.y += (targetY - camera.position.y) * .018;
   camera.position.z += (cameraTarget.z - camera.position.z) * .018;
-  camera.lookAt(cameraTarget.lookX, cameraTarget.lookY, cameraTarget.lookZ);
+  camera.lookAt(cameraTarget.lookX + roomPan.x, cameraTarget.lookY + roomPan.y, cameraTarget.lookZ);
   renderer.render(scene, camera);
 }
 
@@ -566,6 +586,9 @@ function setupControls() {
     if (event.key === "Tab" && !modalLayer.hidden) trapFocus(event);
   });
   canvas.addEventListener("pointermove", onPointerMove);
+  canvas.addEventListener("pointerdown", onCanvasPointerDown);
+  canvas.addEventListener("pointerup", onCanvasPointerUp);
+  canvas.addEventListener("pointercancel", onCanvasPointerUp);
   canvas.addEventListener("pointerleave", clearHover);
   canvas.addEventListener("click", onCanvasClick);
   window.addEventListener("resize", onResize, { passive: true });
@@ -629,7 +652,20 @@ function castAt(event) {
 function onPointerMove(event) {
   pointerNdc.x = (event.clientX / window.innerWidth - .5) * 2;
   pointerNdc.y = (event.clientY / window.innerHeight - .5) * 2;
-  const hit = castAt(event);
+  if (activeDrag?.pointerId === event.pointerId) {
+    const deltaX = event.clientX - activeDrag.x;
+    const deltaY = event.clientY - activeDrag.y;
+    activeDrag.distance += Math.abs(deltaX) + Math.abs(deltaY);
+    activeDrag.x = event.clientX;
+    activeDrag.y = event.clientY;
+    if (activeDrag.distance > 6) {
+      activeDrag.moved = true;
+      canvas.classList.add("is-panning");
+      roomPan.x = Math.max(-3.5, Math.min(3.5, roomPan.x - deltaX * .018));
+      roomPan.y = Math.max(-1.1, Math.min(1.1, roomPan.y + deltaY * .012));
+    }
+  }
+  const hit = activeDrag?.moved ? null : castAt(event);
   if (hit !== hoveredObject) {
     if (hoveredObject) hoveredObject.scale.copy(hoveredObject.userData.homeScale);
     hoveredObject = hit;
@@ -644,6 +680,21 @@ function onPointerMove(event) {
   }
 }
 
+function onCanvasPointerDown(event) {
+  if (!event.isPrimary || (event.pointerType === "mouse" && event.button !== 0)) return;
+  activeDrag = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, distance: 0, moved: false };
+  suppressSceneClick = false;
+  canvas.setPointerCapture(event.pointerId);
+}
+
+function onCanvasPointerUp(event) {
+  if (activeDrag?.pointerId !== event.pointerId) return;
+  suppressSceneClick = activeDrag.moved;
+  activeDrag = null;
+  canvas.classList.remove("is-panning");
+  if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+}
+
 function clearHover() {
   if (hoveredObject) hoveredObject.scale.copy(hoveredObject.userData.homeScale);
   hoveredObject = null;
@@ -651,6 +702,10 @@ function clearHover() {
 }
 
 function onCanvasClick(event) {
+  if (suppressSceneClick) {
+    suppressSceneClick = false;
+    return;
+  }
   const hit = castAt(event);
   if (hit) openAction(hit.userData.action, null, hit);
 }
@@ -658,7 +713,7 @@ function onCanvasClick(event) {
 function openAction(action, trigger = null, object = null) {
   lastTrigger = trigger || document.activeElement;
   focusOnAction(action, object);
-  if (object) {
+  if (object && !object.userData.fixedInRoom) {
     object.scale.multiplyScalar(1.04);
     window.setTimeout(() => {
       if (object.userData.homeScale) object.scale.copy(object.userData.homeScale);
@@ -678,7 +733,6 @@ function focusOnAction(action, object) {
   const focusTargets = {
     teddy: { x: .2, y: 3.5, z: 9.2, lookX: .7, lookY: 1.55, lookZ: -.1 },
     letter: { x: -2.3, y: 3.15, z: 8.5, lookX: -3.6, lookY: 1.25, lookZ: .15 },
-    photos: { x: .1, y: 3.6, z: 9.5, lookX: 1.25, lookY: 2.8, lookZ: -2.2 },
     gift: { x: 1.25, y: 3.1, z: 8.9, lookX: 2.2, lookY: .75, lookZ: 1.5 },
     music: { x: 3.1, y: 2.8, z: 8.7, lookX: 4.65, lookY: .75, lookZ: 1.5 }
   };
@@ -744,15 +798,32 @@ function showPhotos() {
   const photo = loveData.photos[galleryIndex];
   const actions = `<div class="gallery-arrows"><button class="gallery-previous" type="button" aria-label="Previous memory">←</button><button class="gallery-next" type="button" aria-label="Next memory">→</button></div>`;
   presentModal("our scrapbook", "Little moments", galleryMarkup(photo), actions + actionButton("Close ♡"));
+  wireGalleryImage();
 }
 
 function galleryMarkup(photo) {
   return `<div class="gallery-frame"><div class="photo-placeholder"><span>♡</span><span>memory loading...</span></div><img src="${escapeAttribute(photo.image)}" alt="${escapeAttribute(photo.caption)}" loading="lazy"><span class="sr-only">Photo ${galleryIndex + 1} of ${loveData.photos.length}</span></div><p class="gallery-caption">${escapeHTML(photo.caption)}</p>`;
 }
 
+function wireGalleryImage() {
+  const image = modalContent.querySelector(".gallery-frame img");
+  const placeholder = modalContent.querySelector(".photo-placeholder");
+  const showPlaceholder = () => {
+    image.hidden = true;
+    placeholder.hidden = false;
+  };
+  image.addEventListener("error", showPlaceholder, { once: true });
+  image.addEventListener("load", () => { placeholder.hidden = true; }, { once: true });
+  if (image.complete) {
+    if (image.naturalWidth) placeholder.hidden = true;
+    else showPlaceholder();
+  }
+}
+
 function changePhoto(direction) {
   galleryIndex = (galleryIndex + direction + loveData.photos.length) % loveData.photos.length;
   modalContent.innerHTML = galleryMarkup(loveData.photos[galleryIndex]);
+  wireGalleryImage();
 }
 
 function showGift() {
@@ -856,7 +927,7 @@ function showFinalGift() {
   if (giftLid && !reducedMotion) giftLid.rotation.x = -.9;
   isPlayingVisual = false;
   window.setTimeout(() => {
-    presentModal("for you, with all my love", "For You, Reynaldi Febry Ariesty ♡", `<div class="final-reveal"><p class="final-message">${escapeHTML(loveData.finalMessage)}</p><p class="final-signoff">— from ${escapeHTML(loveData.yourName)}, with love ♡</p><span class="modal-heart" aria-hidden="true">♥</span></div>`, actionButton("Stay a little longer ♡"));
+    presentModal("for you, with all my love", "Reynaldi Febry Ariesty ♡", `<div class="final-reveal"><p class="final-message">${escapeHTML(loveData.finalMessage)}</p><p class="final-signoff">— from ${escapeHTML(loveData.yourName)}, with love ♡</p><span class="modal-heart" aria-hidden="true">♥</span></div>`, actionButton("Stay a little longer ♡"));
   }, reducedMotion ? 0 : 900);
 }
 
